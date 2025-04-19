@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminus - Social Commerce Network</title>
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c0;
+            --secondary: #00cec9;
+            --accent: #fd79a8;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --bg: #f5f6fa;
+            --card-bg: #ffffff;
+            --header-bg: #ffffff;
+            --border: #dfe6e9;
+            --live: #e74c3c;
+            --viewer-count: #e74c3c;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a29bfe;
+            --primary-dark: #6c5ce7;
+            --secondary: #00cec9;
+            --accent: #fd79a8;
+            --text: #f5f6fa;
+            --text-light: #b2bec3;
+            --bg: #2d3436;
+            --card-bg: #1e272e;
+            --header-bg: #1e272e;
+            --border: #3d4a54;
+            --live: #ff7675;
+            --viewer-count: #ff7675;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-areas: 
+                "header"
+                "main"
+                "sidebar";
+            gap: 20px;
+            padding: 0 15px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 992px) {
+            .container {
+                grid-template-columns: 240px 1fr;
+                grid-template-areas: 
+                    "header header"
+                    "sidebar main";
+            }
+        }
+
+        /* Header Styles */
+        header {
+            grid-area: header;
+            position: sticky;
+            top: 0;
+            background-color: var(--header-bg);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            margin-right: 8px;
+            font-size: 2rem;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background-color: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+            max-width: 500px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .go-live-btn {
+            background-color: var(--live);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .go-live-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.4rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--primary);
+        }
+
+        /* Sidebar Styles */
+        aside {
+            grid-area: sidebar;
+            display: none;
+        }
+
+        @media (min-width: 992px) {
+            aside {
+                display: block;
+                position: sticky;
+                top: 80px;
+                height: calc(100vh - 100px);
+                overflow-y: auto;
+                padding-right: 10px;
+            }
+        }
+
+        .sidebar-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .filter-btn .badge {
+            margin-left: auto;
+            background-color: var(--secondary);
+            color: var(--text);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        .suggested-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .suggested-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .suggested-item:hover {
+            background-color: rgba(108, 92, 231, 0.1);
+        }
+
+        .suggested-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .suggested-info {
+            flex-grow: 1;
+        }
+
+        .suggested-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .suggested-category {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .follow-btn {
+            background: none;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 15px;
+            padding: 3px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .follow-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Main Content Styles */
+        main {
+            grid-area: main;
+            padding: 20px 0;
+        }
+
+        .feed-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feed-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .feed-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .thumbnail-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            overflow: hidden;
+        }
+
+        .thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .feed-item:hover .thumbnail {
+            transform: scale(1.05);
+            filter: brightness(0.8);
+        }
+
+        .live-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: var(--live);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 2;
+        }
+
+        .live-pulse {
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .viewer-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 2;
+        }
+
+        .coming-soon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            z-index: 2;
+        }
+
+        .item-info {
+            padding: 15px;
+        }
+
+        .streamer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .streamer-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .streamer-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .item-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .item-price {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .join-btn {
+            width: 100%;
+            padding: 8px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .join-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text);
+            margin-left: 15px;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .logo {
+                order: 1;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                order: 2;
+            }
+            
+            .search-bar {
+                order: 3;
+                flex: 1 0 100%;
+                margin: 10px 0 0 0;
+            }
+            
+            .nav-actions {
+                order: 4;
+                margin-left: auto;
+            }
+            
+            .feed-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Modal for Stream */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .stream-player {
+            width: 100%;
+            padding-top: 56.25%;
+            position: relative;
+            background-color: black;
+        }
+
+        .stream-player iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .stream-info {
+            padding: 20px;
+        }
+
+        .stream-info-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .streamer-info-large {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .streamer-avatar-large {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .stream-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background-color: var(--bg);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text);
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .stream-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .stream-description {
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .stream-stats {
+            display: flex;
+            gap: 15px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(108, 92, 231, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">🚀</span>
+                <span>Terminus</span>
+            </div>
+            
+            <button class="mobile-menu-btn">☰</button>
+            
+            <div class="search-bar">
+                <input type="text" placeholder="Search streams, products, or gigs...">
+            </div>
+            
+            <div class="nav-actions">
+                <button class="go-live-btn">
+                    <span>+</span>
+                    <span>Go Live</span>
+                </button>
+                
+                <div class="user-actions">
+                    <button class="icon-btn">
+                        <span class="notification-badge">3</span>
+                        🔔
+                    </button>
+                    <button class="icon-btn">✉️</button>
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="user-avatar">
+                </div>
+                
+                <button class="theme-toggle" id="themeToggle">🌓</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside>
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Categories</h3>
+                <div class="filter-options">
+                    <button class="filter-btn active">
+                        <span>🌐</span>
+                        All Content
+                        <span class="badge">42</span>
+                    </button>
+                    <button class="filter-btn">
+                        <span>🔴</span>
+                        Live Streams
+                        <span class="badge">15</span>
+                    </button>
+                    <button class="filter-btn">
+                        <span>🛒</span>
+                        Products
+                        <span class="badge">12</span>
+                    </button>
+                    <button class="filter-btn">
+                        <span>💼</span>
+                        Gigs
+                        <span class="badge">8</span>
+                    </button>
+                    <button class="filter-btn">
+                        <span>⭐</span>
+                        Favorites
+                        <span class="badge">7</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Suggested Streamers</h3>
+                <div class="suggested-list">
+                    <div class="suggested-item">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Streamer" class="suggested-avatar">
+                        <div class="suggested-info">
+                            <div class="suggested-name">Alex Johnson</div>
+                            <div class="suggested-category">Tech Reviews</div>
+                        </div>
+                        <button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="suggested-item">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Streamer" class="suggested-avatar">
+                        <div class="suggested-info">
+                            <div class="suggested-name">Mia Chen</div>
+                            <div class="suggested-category">Fashion Hauls</div>
+                        </div>
+                        <button class="follow-btn">Follow</button>
+                    </div>
+                    <div class="suggested-item">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Streamer" class="suggested-avatar">
+                        <div class="suggested-info">
+                            <div class="suggested-name">David Wilson</div>
+                            <div class="suggested-category">DIY Crafts</div>
+                        </div>
+                        <button class="follow-btn">Follow</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Trending Products</h3>
+                <div class="suggested-list">
+                    <div class="suggested-item">
+                        <img src="https://via.placeholder.com/50" alt="Product" class="suggested-avatar">
+                        <div class="suggested-info">
+                            <div class="suggested-name">Wireless Earbuds</div>
+                            <div class="suggested-category">Electronics</div>
+                        </div>
+                    </div>
+                    <div class="suggested-item">
+                        <img src="https://via.placeholder.com/50" alt="Product" class="suggested-avatar">
+                        <div class="suggested-info">
+                            <div class="suggested-name">Yoga Mat</div>
+                            <div class="suggested-category">Fitness</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <div class="feed-container" id="feedContainer">
+                <!-- Feed items will be dynamically inserted here -->
+            </div>
+            
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Stream Modal -->
+    <div class="modal" id="streamModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">✕</button>
+            <div class="stream-player">
+                <iframe id="streamFrame" src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="stream-info">
+                <div class="stream-info-header">
+                    <div class="streamer-info-large">
+                        <img id="modalAvatar" src="" alt="Streamer" class="streamer-avatar-large">
+                        <div>
+                            <div id="modalStreamerName" class="streamer-name"></div>
+                            <div class="viewer-count">
+                                <span class="live-pulse"></span>
+                                <span id="modalViewerCount">0</span> viewers
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stream-actions">
+                        <button class="action-btn">❤️</button>
+                        <button class="action-btn">🔗</button>
+                        <button class="action-btn">💬</button>
+                    </div>
+                </div>
+                <h3 id="modalStreamTitle" class="stream-title"></h3>
+                <p id="modalStreamDescription" class="stream-description"></p>
+                <div class="stream-stats">
+                    <div class="stat">👍 <span id="likesCount">0</span></div>
+                    <div class="stat">💬 <span id="commentsCount">0</span></div>
+                    <div class="stat">🔄 <span id="sharesCount">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        // Check for saved theme preference or use preferred color scheme
+        const currentTheme = localStorage.getItem('theme') || 
+                            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // Apply the current theme
+        body.setAttribute('data-theme', currentTheme);
+        
+        // Toggle between dark and light themes
+        themeToggle.addEventListener('click', () => {
+            const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Mock Data for Streams
+        const mockStreams = [
+            {
+                id: 1,
+                type: 'live',
+                title: 'Tech Unboxing: New Gadgets 2023',
+                description: 'Live unboxing and review of the latest tech gadgets released this month.',
+                streamer: {
+                    name: 'TechGuru',
+                    avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
+                },
+                thumbnail: 'https://source.unsplash.com/random/600x340/?tech',
+                viewers: 1245,
+                duration: '1:32:45',
+                tags: ['tech', 'gadgets', 'review']
+            },
+            {
+                id: 2,
+                type: 'live',
+                title: 'DIY Home Decor Workshop',
+                description: 'Learn how to create beautiful home decor items with simple materials.',
+                streamer: {
+                    name: 'CreativeHands',
+                    avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
+                },
+                thumbnail: 'https://source.unsplash.com/random/600x340/?diy',
+                viewers: 876,
+                duration: '2:15:22',
+                tags: ['diy', 'crafts', 'home']
+            },
+            {
+                id: 3,
+                type: 'product',
+                title: 'Wireless Noise-Canceling Headphones',
+                description: 'Premium sound quality with 30-hour battery life.',
+                price: '$199.99',
+                image: 'https://source.unsplash.com/random/600x340/?headphones',
+                seller: {
+                    name: 'AudioPro',
+                    avatar: 'https://randomuser.me/api/portraits/men/22.jpg'
+                },
+                rating: 4.8,
+                tags: ['audio', 'tech', 'accessories']
+            },
+            {
+                id: 4,
+                type: 'live',
+                title: 'Fitness Challenge Day 5',
+                description: 'Join our 30-day fitness challenge! Today: Core workout.',
+                streamer: {
+                    name: 'FitCoach',
+                    avatar: 'https://randomuser.me/api/portraits/women/68.jpg'
+                },
+                thumbnail: 'https://source.unsplash.com/random/600x340/?fitness',
+                viewers: 1532,
+                duration: '0:45:18',
+                tags: ['fitness', 'workout', 'health']
+            },
+            {
+                id: 5,
+                type: 'gig',
+                title: 'Professional Logo Design',
+                description: 'Custom logo design for your brand or business.',
+                price: '$150',
+                image: 'https://source.unsplash.com/random/600x340/?logo',
+                seller: {
+                    name: 'DesignMaster',
+                    avatar: 'https://randomuser.me/api/portraits/men/75.jpg'
+                },
+                rating: 4.9,
+                tags: ['design', 'branding', 'art']
+            },
+            {
+                id: 6,
+                type: 'live',
+                title: 'Cooking Show: Italian Pasta Night',
+                description: 'Learn to make authentic Italian pasta from scratch!',
+                streamer: {
+                    name: 'ChefMaria',
+                    avatar: 'https://randomuser.me/api/portraits/women/33.jpg'
+                },
+                thumbnail: 'https://source.unsplash.com/random/600x340/?pasta',
+                viewers: 2103,
+                duration: '1:08:52',
+                tags: ['cooking', 'food', 'italian']
+            }
+        ];
+
+        // DOM Elements
+        const feedContainer = document.getElementById('feedContainer');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const streamModal = document.getElementById('streamModal');
+        const closeModal = document.getElementById('closeModal');
+        const streamFrame = document.getElementById('streamFrame');
+        const modalAvatar = document.getElementById('modalAvatar');
+        const modalStreamerName = document.getElementById('modalStreamerName');
+        const modalViewerCount = document.getElementById('modalViewerCount');
+        const modalStreamTitle = document.getElementById('modalStreamTitle');
+        const modalStreamDescription = document.getElementById('modalStreamDescription');
+        const likesCount = document.getElementById('likesCount');
+        const commentsCount = document.getElementById('commentsCount');
+        const sharesCount = document.getElementById('sharesCount');
+
+        // Generate Feed Items
+        function generateFeedItems(items) {
+            feedContainer.innerHTML = '';
+            
+            items.forEach(item => {
+                const feedItem = document.createElement('div');
+                feedItem.className = 'feed-item';
+                
+                if (item.type === 'live') {
+                    feedItem.innerHTML = `
+                        <div class="thumbnail-container">
+                            <img src="${item.thumbnail}" alt="${item.title}" class="thumbnail">
+                            <div class="live-badge">
+                                <span class="live-pulse"></span>
+                                LIVE
+                            </div>
+                            <div class="viewer-count">
+                                👥 ${item.viewers.toLocaleString()}
+                            </div>
+                        </div>
+                        <div class="item-info">
+                            <div class="streamer-info">
+                                <img src="${item.streamer.avatar}" alt="${item.streamer.name}" class="streamer-avatar">
+                                <span class="streamer-name">${item.streamer.name}</span>
+                            </div>
+                            <h4 class="item-title">${item.title}</h4>
+                            <p class="item-description">${item.description}</p>
+                            <button class="join-btn" data-id="${item.id}">Join Stream</button>
+                        </div>
+                    `;
+                } else if (item.type === 'product') {
+                    feedItem.innerHTML = `
+                        <div class="thumbnail-container">
+                            <img src="${item.image}" alt="${item.title}" class="thumbnail">
+                            <div class="coming-soon">Coming Soon</div>
+                        </div>
+                        <div class="item-info">
+                            <div class="streamer-info">
+                                <img src="${item.seller.avatar}" alt="${item.seller.name}" class="streamer-avatar">
+                                <span class="streamer-name">${item.seller.name}</span>
+                            </div>
+                            <h4 class="item-title">${item.title}</h4>
+                            <p class="item-description">${item.description}</p>
+                            <div class="item-price">${item.price}</div>
+                            <button class="join-btn" disabled>Coming Soon</button>
+                        </div>
+                    `;
+                } else if (item.type === 'gig') {
+                    feedItem.innerHTML = `
+                        <div class="thumbnail-container">
+                            <img src="${item.image}" alt="${item.title}" class="thumbnail">
+                            <div class="coming-soon">Coming Soon</div>
+                        </div>
+                        <div class="item-info">
+                            <div class="streamer-info">
+                                <img src="${item.seller.avatar}" alt="${item.seller.name}" class="streamer-avatar">
+                                <span class="streamer-name">${item.seller.name}</span>
+                            </div>
+                            <h4 class="item-title">${item.title}</h4>
+                            <p class="item-description">${item.description}</p>
+                            <div class="item-price">${item.price}</div>
+                            <button class="join-btn" disabled>Coming Soon</button>
+                        </div>
+                    `;
+                }
+                
+                feedContainer.appendChild(feedItem);
+            });
+            
+            // Add event listeners to join buttons
+            document.querySelectorAll('.join-btn').forEach(btn => {
+                if (!btn.disabled) {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const itemId = parseInt(btn.getAttribute('data-id'));
+                        openStreamModal(itemId);
+                    });
+                }
+            });
+            
+            // Add click event to feed items
+            document.querySelectorAll('.feed-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    // For demo purposes, just show the first stream when clicking on the item
+                    const streamItem = mockStreams.find(s => s.type === 'live');
+                    if (streamItem) {
+                        openStreamModal(streamItem.id);
+                    }
+                });
+            });
+        }
+
+        // Open Stream Modal
+        function openStreamModal(streamId) {
+            const stream = mockStreams.find(s => s.id === streamId && s.type === 'live');
+            if (!stream) return;
+            
+            // For demo, we'll use a placeholder video
+            streamFrame.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1';
+            modalAvatar.src = stream.streamer.avatar;
+            modalStreamerName.textContent = stream.streamer.name;
+            modalViewerCount.textContent = stream.viewers.toLocaleString();
+            modalStreamTitle.textContent = stream.title;
+            modalStreamDescription.textContent = stream.description;
+            
+            // Random stats for demo
+            likesCount.textContent = Math.floor(stream.viewers * 0.7).toLocaleString();
+            commentsCount.textContent = Math.floor(stream.viewers * 0.3).toLocaleString();
+            sharesCount.textContent = Math.floor(stream.viewers * 0.1).toLocaleString();
+            
+            streamModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Simulate viewer count increase
+            const viewerInterval = setInterval(() => {
+                const current = parseInt(modalViewerCount.textContent.replace(/,/g, ''));
+                modalViewerCount.textContent = (current + Math.floor(Math.random() * 10)).toLocaleString();
+            }, 3000);
+            
+            // Clean up interval when modal closes
+            closeModal.onclick = function() {
+                clearInterval(viewerInterval);
+                streamModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                streamFrame.src = '';
+            }
+            
+            // Also close when clicking outside modal content
+            streamModal.onclick = function(e) {
+                if (e.target === streamModal) {
+                    clearInterval(viewerInterval);
+                    streamModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    streamFrame.src = '';
+                }
+            }
+        }
+
+        // Simulate loading data
+        function simulateDataLoading() {
+            loadingIndicator.style.display = 'flex';
+            
+            setTimeout(() => {
+                generateFeedItems(mockStreams);
+                loadingIndicator.style.display = 'none';
+                
+                // Simulate periodic updates to the feed
+                setInterval(() => {
+                    // For demo, just rotate the first item to show "new content"
+                    if (mockStreams.length > 0) {
+                        const firstItem = mockStreams.shift();
+                        mockStreams.push(firstItem);
+                        generateFeedItems(mockStreams);
+                    }
+                }, 15000);
+            }, 1500);
+        }
+
+        // Initialize
+        simulateDataLoading();
+
+        // Notes for real implementation:
+        // 1. Replace mockStreams with real API calls to your backend
+        // 2. For live streams, implement WebSocket connections for real-time updates
+        // 3. For products/gigs, uncomment and implement the actual functionality when ready
+        // 4. Add proper error handling and loading states
+        // 5. Implement proper authentication for the "Go Live" button
+    </script>
+</body>
+</html>
